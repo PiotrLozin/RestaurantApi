@@ -6,28 +6,33 @@ namespace RestaurantApi1.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
+        private readonly IWeatherForecastService _service;
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IWeatherForecastService service)
         {
             _logger = logger;
+            _service = service;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
+        [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            var result = _service.Get();
+            return result;
+        }
+
+        [HttpGet("currentDay/{max}")]
+        public IEnumerable<WeatherForecast> Get2([FromQuery]int take, [FromRoute]int max)
+        {
+            var result = _service.Get();
+            return result;
+        }
+
+        [HttpPost]
+        public ActionResult<string> Hello([FromBody]string name)
+        {
+            return $"Hello {name}";
         }
     }
 }
