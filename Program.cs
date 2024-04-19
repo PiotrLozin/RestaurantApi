@@ -1,4 +1,5 @@
 using RestaurantApi1;
+using RestaurantApi1.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
+builder.Services.AddDbContext<RestaurantDbContext>();
+builder.Services.AddScoped<RestaurantSeeder>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -18,6 +21,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+// Seed the database
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetService<RestaurantSeeder>();
+    seeder.Seed();
 }
 
 app.UseHttpsRedirection();
